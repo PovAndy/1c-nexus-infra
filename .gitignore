@@ -1,0 +1,44 @@
+# Секреты — никогда не коммитить
+.env
+.env.*
+.env.*.local
+.env.local
+.env.openrouter.local
+.env.gemini.local
+!*.example
+
+# Виртуальные окружения
+.venv*/
+venv/
+.venv/
+.venv-gemini-bridge/
+
+# Кэши Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# Runtime-артефакты
+temp/
+logs/
+*.log
+*.pid
+workspace_graph_v2.json
+workspace_graph_v2.state.json
+workspace_graph_v2.lock
+workspace_graph_v2.dirty
+workspace_graph_v2_watcher.lock
+workspace_graph_v2_watcher.status.json
+knowledge_base.json
+rag_lifecycle_active.json
+rag_lifecycle_active.lock
+
+# Индексы и инструменты
+.code-index/
+docs/.code-index/
+
+# ОС
+.DS_Store
+Thumbs.db
+*:Zone.Identifier

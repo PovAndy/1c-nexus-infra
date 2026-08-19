@@ -1,0 +1,23 @@
+[daemon]
+# Пути заданы относительно корня фреймворка (NEXUS_WORKSPACE_ROOT).
+ http_port = 44369
+ max_concurrent_initial = 1
+
+[[paths]]
+alias = "scripts"
+path = "scripts"
+language = "python"
+debounce_ms = 1000
+batch_ms = 1500
+
+[[paths]]
+alias = "docs"
+path = "docs"
+debounce_ms = 1000
+batch_ms = 1500
+
+[[paths]]
+alias = "data"
+path = "data"
+debounce_ms = 500
+batch_ms = 1000

@@ -1,0 +1,20 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "python3 scripts/vscode_omvl_hook.py --event session-start",
+        "cwd": ".",
+        "timeout": 20
+      }
+    ],
+    "PreCompact": [
+      {
+        "type": "command",
+        "command": "python3 scripts/vscode_omvl_hook.py --event pre-compact",
+        "cwd": ".",
+        "timeout": 30
+      }
+    ]
+  }
+}

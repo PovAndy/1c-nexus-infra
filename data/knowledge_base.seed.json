@@ -1,0 +1,18 @@
+{
+  "schema_version": "2.0",
+  "version": "2.0",
+  "taxonomy": {
+    "x17_recovery": {},
+    "validation": {},
+    "environment_setup": {},
+    "anti_patterns": {},
+    "1c_logic": {}
+  },
+  "error_solution_table": [],
+  "indexes": {
+    "by_topic": {},
+    "by_subtopic": {},
+    "by_kind": {},
+    "by_mem_room": {}
+  }
+}
