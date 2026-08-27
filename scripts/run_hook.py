@@ -73,7 +73,14 @@ def _paths_from_patch(command: str) -> list[str]:
 
 
 def _session_start() -> tuple[int, str]:
-    """Сверяет фактическую точку и планирует Graph V2 без ожидания его блокировки."""
+    """Сверяет env и фактическую точку, затем планирует Graph V2 без ожидания."""
+    env_contract = [sys.executable, str(ROOT / "scripts" / "validate_env_contract.py")]
+    try:
+        env_result = subprocess.run(env_contract, cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=5, check=False)
+    except subprocess.TimeoutExpired:
+        env_message = "ENV_CONTRACT: WARN timeout; bridge-маршрутизацию считайте неподтвержденной."
+    else:
+        env_message = env_result.stdout.strip() or "ENV_CONTRACT: WARN validator returned no result."
     reality = [sys.executable, str(ROOT / "scripts" / "reconcile_reality.py")]
     try:
         completed = subprocess.run(reality, cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=5, check=False)
@@ -93,7 +100,8 @@ def _session_start() -> tuple[int, str]:
         subprocess.Popen(graph, cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
     except OSError:
         message += " Graph V2 не удалось запланировать; перед навигацией выполните его явную проверку."
-    return 0, json.dumps({"kind": "reality_reconciliation", "action": message[:1200]}, ensure_ascii=False)
+    action = f"{env_message} {message}"
+    return 0, json.dumps({"kind": "reality_reconciliation", "action": action[:1200]}, ensure_ascii=False)
 
 
 def _pre_compact() -> tuple[int, str]:

@@ -11,7 +11,8 @@ from pathlib import Path
 
 КОРЕНЬ_ПРОЕКТА = Path(os.getenv("NEXUS_WORKSPACE_ROOT", Path(__file__).resolve().parent.parent))
 ЗАПРЕЩЕННЫЕ_ПРЕФИКСЫ = (
-    ".venv-gemini-bridge/",
+    ".venv/",
+    ".venv-",
     ".code-index/",
     "docs/.code-index/",
 )

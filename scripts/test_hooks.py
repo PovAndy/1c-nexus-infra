@@ -6,6 +6,7 @@ from __future__ import annotations
 import io
 import json
 import os
+import subprocess
 import sys
 import time
 import unittest
@@ -92,6 +93,19 @@ class HooksTests(unittest.TestCase):
             code, stderr, stdout = self._invoke("stop-hook", "{}")
         self.assertEqual(code, 0, stderr)
         self.assertEqual(json.loads(stdout), {"continue": True})
+
+    def test_session_start_reports_env_contract_before_reality(self) -> None:
+        env_result = subprocess.CompletedProcess([], 0, "ENV_CONTRACT: PASS; targets=7", "")
+        reality_result = subprocess.CompletedProcess([], 0, "REALITY_CHECK: PASS", "")
+        with patch.object(run_hook.subprocess, "run", side_effect=[env_result, reality_result]) as run, patch.object(run_hook.subprocess, "Popen") as popen:
+            code, stderr, stdout = self._invoke("session-start", "{}")
+        payload = json.loads(stdout)
+        context = payload["hookSpecificOutput"]["additionalContext"]
+        self.assertEqual(code, 0, stderr)
+        self.assertIn("ENV_CONTRACT: PASS", context)
+        self.assertIn("REALITY_CHECK: PASS", context)
+        self.assertEqual(run.call_count, 2)
+        popen.assert_called_once()
 
 
 if __name__ == "__main__":
