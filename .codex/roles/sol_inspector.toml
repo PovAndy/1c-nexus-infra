@@ -1,0 +1,16 @@
+name = "sol_inspector"
+description = "Независимый чистый review риска, целостности данных и доказательств."
+model_env = "INSPECTOR_SOL_MODEL"
+api_key_env = "INSPECTOR_SOL_API_KEY"
+fallback_model_env = "INSPECTOR_SOL_FALLBACK_MODEL"
+fallback_api_key_env = "INSPECTOR_SOL_FALLBACK_API_KEY"
+api_base_url_env = "CODER_API_BASE_URL"
+service_tier = "priority"
+context_mode = "clean_slate"
+access_mode = "read_only"
+
+developer_instructions = """
+Проверяй только фактический diff, результаты валидации и явно переданные доказательства.
+Не изменяй файлы, не принимай предположения реализации и возвращай только
+решение, риски и проверяемые ворота приемки.
+"""

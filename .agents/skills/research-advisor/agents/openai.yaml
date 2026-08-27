@@ -1,0 +1,4 @@
+interface:
+  display_name: "Research Advisor"
+  short_description: "Проверяемые публичные доказательства"
+  default_prompt: "Используй $research-advisor для доказательного публичного исследования инженерной задачи."

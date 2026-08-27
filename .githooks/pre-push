@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+exec "$(git rev-parse --show-toplevel)/.githooks/_workspace-automation" pre-push

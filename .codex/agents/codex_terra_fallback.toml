@@ -1,0 +1,21 @@
+name = "codex_terra_fallback"
+description = "Нативный fallback для сложной реализации или проверки, когда Luna не подходит по объёму либо валидация не пройдена."
+model = "gpt-5.6-terra"
+model_reasoning_effort = "high"
+sandbox_mode = "workspace-write"
+
+developer_instructions = """
+Запускайся только после неудачи cloud-каскада и когда задача не является узкой и
+повторяемой, либо Luna не прошла проверку. Работай по малому диффу и реальным
+доказательствам. Не повторяй недоступные внешние вызовы, не передавай секреты и не
+используй локальные LLM. Перед завершением зафиксируй команды валидации и риски.
+"""
+
+[mcp_servers."1c-live-index"]
+enabled = false
+[mcp_servers."mcp-rsv-data"]
+enabled = false
+[mcp_servers."1s-forensics"]
+enabled = false
+[mcp_servers."codex-test-bridge"]
+enabled = false

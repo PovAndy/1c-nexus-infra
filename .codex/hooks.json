@@ -1,0 +1,49 @@
+{
+  "description": "Детерминированные инфраструктурные хуки 1c-nexus-infra.",
+  "hooks": {
+    "SessionStart": [{
+      "matcher": "startup|resume|clear|compact",
+      "hooks": [{
+        "type": "command",
+        "command": "python3 scripts/run_hook.py session-start",
+        "timeout": 6,
+        "statusMessage": "Сверяется актуальная точка рабочей среды"
+      }]
+    }],
+    "PreToolUse": [{
+      "matcher": "^(apply_patch|Edit|Write)$",
+      "hooks": [{
+        "type": "command",
+        "command": "python3 scripts/run_hook.py pre-write",
+        "timeout": 15,
+        "statusMessage": "Создаётся резервная копия изменяемого файла"
+      }]
+    }],
+    "PostToolUse": [{
+      "matcher": "^(apply_patch|Edit|Write)$",
+      "hooks": [{
+        "type": "command",
+        "command": "python3 scripts/run_hook.py post-write",
+        "timeout": 30,
+        "statusMessage": "Проверяется результат изменения"
+      }]
+    }],
+    "PreCompact": [{
+      "matcher": "^(manual|auto)$",
+      "hooks": [{
+        "type": "command",
+        "command": "python3 scripts/run_hook.py pre-compact",
+        "timeout": 20,
+        "statusMessage": "Формируется локальная выжимка сессии"
+      }]
+    }],
+    "Stop": [{
+      "hooks": [{
+        "type": "command",
+        "command": "python3 scripts/run_hook.py stop-hook",
+        "timeout": 30,
+        "statusMessage": "Повторно проверяются обязательные ворота"
+      }]
+    }]
+  }
+}

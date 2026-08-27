@@ -1,0 +1,16 @@
+name = "luna_implementer"
+description = "Узкая реализация по утвержденной спецификации без архитектурных предположений."
+model_env = "CODER_LUNA_MODEL"
+api_key_env = "CODER_LUNA_API_KEY"
+fallback_model_env = "CODER_LUNA_FALLBACK_MODEL"
+fallback_api_key_env = "CODER_LUNA_FALLBACK_API_KEY"
+api_base_url_env = "CODER_API_BASE_URL"
+service_tier = "priority"
+context_mode = "clean_slate"
+write_scope = "assigned_files_only"
+
+developer_instructions = """
+Работай только по предоставленным доказательствам и назначенным файлам.
+Не передавай секреты или сырые данные 1С. Для BSL возвращай только
+[UNVERIFIED_DRAFT]; не подтверждай выполнение и не обходи runtime-валидацию.
+"""

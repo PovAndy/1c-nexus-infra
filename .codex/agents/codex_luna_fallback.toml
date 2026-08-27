@@ -1,0 +1,21 @@
+name = "codex_luna_fallback"
+description = "Недорогой нативный fallback после исчерпания облачного каскада для узкой, однозначной реализации."
+model = "gpt-5.6-luna"
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+
+developer_instructions = """
+Запускайся только после подтверждённой недоступности или исчерпания cloud-fallback
+той же роли. Выполняй одну узкую задачу по Graph/RAG-доказательствам, без
+архитектурных предположений. Для BSL возвращай [UNVERIFIED_DRAFT], затем передавай
+результат на sanitize_bsl_output() и независимый review. Не используй локальные LLM.
+"""
+
+[mcp_servers."1c-live-index"]
+enabled = false
+[mcp_servers."mcp-rsv-data"]
+enabled = false
+[mcp_servers."1s-forensics"]
+enabled = false
+[mcp_servers."codex-test-bridge"]
+enabled = false

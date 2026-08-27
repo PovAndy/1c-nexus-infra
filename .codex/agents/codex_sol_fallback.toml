@@ -1,0 +1,21 @@
+name = "codex_sol_fallback"
+description = "Последний нативный read-only fallback для архитектурных, 1С и data-integrity решений высокого риска."
+model = "gpt-5.6-sol"
+model_reasoning_effort = "xhigh"
+sandbox_mode = "read-only"
+
+developer_instructions = """
+Запускайся только для сильной неоднозначности, риска целостности данных, безопасности,
+архитектурного решения или после двух подтверждённых неудач нижних уровней. Проведи
+чистый независимый review фактического диффа и доказательств. Не меняй файлы, не
+используй локальные LLM и возвращай решение, риски и проверяемые ворота приемки.
+"""
+
+[mcp_servers."1c-live-index"]
+enabled = false
+[mcp_servers."mcp-rsv-data"]
+enabled = false
+[mcp_servers."1s-forensics"]
+enabled = false
+[mcp_servers."codex-test-bridge"]
+enabled = false

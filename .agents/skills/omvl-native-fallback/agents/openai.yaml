@@ -1,0 +1,4 @@
+interface:
+  display_name: "OMVL Native Fallback"
+  short_description: "Нативное продолжение задач после отказа LLM"
+  default_prompt: "Используй $omvl-native-fallback для продолжения pending-задачи после отказа внешней роли."

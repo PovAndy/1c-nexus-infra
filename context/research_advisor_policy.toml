@@ -1,0 +1,28 @@
+# Доказательный Research Advisor: безопасный режим по умолчанию.
+version = 1
+mode = "operator_assisted_public_web"
+artifact_ttl_days = 14
+
+[limits]
+max_question_chars = 900
+max_scope_chars = 600
+max_sources_per_task = 4
+max_source_bytes = 1048576
+max_excerpt_chars = 1400
+max_sources_per_claim = 3
+max_role_attempts = 1
+max_role_seconds = 30
+
+[sources]
+# Автоматический поиск не включен: URL отбирает оператор через изолированный Web-инструмент.
+allowed_hosts = [
+  "1c.ru", "its.1c.ru", "v8.1c.ru", "github.com", "docs.github.com",
+  "postgresql.org", "www.postgresql.org", "docs.python.org",
+  "developers.openai.com", "platform.openai.com", "openai.com",
+  "owasp.org", "genai.owasp.org", "infostart.ru", "habr.com"
+]
+
+[tiers]
+t1 = ["1c.ru", "its.1c.ru", "v8.1c.ru", "postgresql.org", "www.postgresql.org", "docs.python.org", "developers.openai.com", "platform.openai.com", "openai.com", "owasp.org", "genai.owasp.org"]
+t2 = ["github.com", "docs.github.com"]
+t3 = ["infostart.ru", "habr.com"]
