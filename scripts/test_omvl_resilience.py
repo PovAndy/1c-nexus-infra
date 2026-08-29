@@ -11,23 +11,34 @@ import tempfile
 import unittest
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import httpx
 
 from omvl_llm_runtime import CodexFallbackRequired, request_omvl5_role_completion
 from omvl_resilience import CircuitOpen, ResilienceStore, classify_failure
+from openrouter_rate_limit import Wan25QueueOverflow, acquire_wan25_slot
 
 
 TEST_ENV = {
+    "WAN25_GATEWAY_ENABLED": "0",
     "CODER_API_BASE_URL": "https://roles.invalid/v1",
     "CODER_LUNA_MODEL": "claude-sonnet-5",
     "CODER_LUNA_API_KEY": "test-luna-key",
+    "CODER_LUNA_FALLBACK_MODEL": "claude-3-7-sonnet",
     "INSPECTOR_SOL_MODEL": "gpt-5.6-sol",
     "INSPECTOR_SOL_API_KEY": "test-sol-key",
+    "ORCHESTRATOR_MODEL": "gpt-5.6-sol",
+    "ORCHESTRATOR_FALLBACK_MODEL": "gpt-5.6-luna",
+    "ORCHESTRATOR_API_BASE_URL": "https://roles.invalid/v1",
     "CRITIC_MODEL": "deepseek-v4-flash",
+    "CRITIC_FALLBACK_MODEL": "zhipu/glm-5-3",
     "CRITIC_API_KEY": "test-critic-key",
+    "LIBRARIAN_MODEL": "moonshot/kimi-k3",
+    "LIBRARIAN_FALLBACK_MODEL": "qwen/qwen3.6-plus",
+    "OR_KEY_PAID_CHEAP": "test-role-key",
     "SCRIBE_MODEL": "gemini-3-flash",
+    "SCRIBE_FALLBACK_MODEL": "qwen/qwen3.6-plus",
     "SCRIBE_API_KEY": "test-scribe-key",
     "OMVL_CODER_CONNECT_TIMEOUT_SECONDS": "3",
     "CODE_INDEX_PRODUCTION_TIMEOUT": "30",
@@ -190,6 +201,79 @@ class ResilienceTests(unittest.TestCase):
 
 
 class RuntimeIntegrationTests(unittest.TestCase):
+    def test_wan25_429_uses_exponential_backoff_before_success(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            calls = 0
+
+            def handler(request: httpx.Request) -> httpx.Response:
+                nonlocal calls
+                calls += 1
+                if calls < 3:
+                    return httpx.Response(429, headers={"Retry-After": "1"}, request=request)
+                return httpx.Response(200, json={"choices": [{"message": {"content": "ok"}}]}, request=request)
+
+            env = {
+                **TEST_ENV,
+                "WAN25_GATEWAY_ENABLED": "1",
+                "WAN25_API_KEY": "test-wan25-key",
+                "CODER_API_BASE_URL": "https://apiai.wan-2-5.pro/v1",
+            }
+            with patch.dict(os.environ, env, clear=False), patch("omvl_llm_runtime.acquire_wan25_slot", new=AsyncMock()) as acquire, patch(
+                "omvl_llm_runtime.asyncio.sleep", new=AsyncMock()
+            ) as sleep:
+                result, route = asyncio.run(
+                    request_omvl5_role_completion(
+                        "critic",
+                        [{"role": "user", "content": "Проверка"}],
+                        transport=httpx.MockTransport(handler),
+                        resilience_store=ResilienceStore(Path(tmp)),
+                    )
+                )
+            self.assertEqual(result["choices"][0]["message"]["content"], "ok")
+            self.assertEqual(route, "critic")
+            self.assertEqual(calls, 3)
+            self.assertEqual(acquire.await_count, 3)
+            self.assertEqual([call.args[0] for call in sleep.await_args_list], [7.0, 14.0])
+
+    def test_wan25_queue_overflow_routes_to_secondary_tier(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            def handler(request: httpx.Request) -> httpx.Response:
+                self.assertEqual(json.loads(request.content)["model"], "zhipu/glm-5-3")
+                return httpx.Response(200, json={"choices": [{"message": {"content": "fallback"}}]}, request=request)
+
+            env = {
+                **TEST_ENV,
+                "WAN25_GATEWAY_ENABLED": "1",
+                "WAN25_API_KEY": "test-wan25-key",
+                "CODER_API_BASE_URL": "https://apiai.wan-2-5.pro/v1",
+                "CRITIC_FALLBACK_MODEL": "zhipu/glm-5-3",
+            }
+            limiter = AsyncMock(side_effect=[Wan25QueueOverflow(20.0, "vanchin/deepseek-v4-pro"), None])
+            with patch.dict(os.environ, env, clear=False), patch("omvl_llm_runtime.acquire_wan25_slot", new=limiter):
+                result, route = asyncio.run(
+                    request_omvl5_role_completion(
+                        "critic",
+                        [{"role": "user", "content": "Проверка"}],
+                        transport=httpx.MockTransport(handler),
+                        resilience_store=ResilienceStore(Path(tmp)),
+                    )
+                )
+            self.assertEqual(result["choices"][0]["message"]["content"], "fallback")
+            self.assertEqual(route, "critic_fallback")
+            self.assertEqual(limiter.await_count, 2)
+
+    def test_wan25_limiter_rejects_queue_before_six_second_spacing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            import openrouter_rate_limit as limiter
+
+            with patch.object(limiter, "RUNTIME_DIR", Path(tmp)), patch.object(limiter, "STATE_FILE", Path(tmp) / "state.json"), patch.object(
+                limiter, "LOCK_FILE", Path(tmp) / "state.lock"
+            ), patch.dict(os.environ, {"WAN25_RPM_LIMIT": "10", "WAN25_MIN_INTERVAL_SECONDS": "6"}, clear=False):
+                asyncio.run(acquire_wan25_slot("key-a", "primary", base_url="https://apiai.wan-2-5.pro/v1", max_queue_wait=0))
+                with self.assertRaises(Wan25QueueOverflow) as raised:
+                    asyncio.run(acquire_wan25_slot("key-b", "secondary", base_url="https://apiai.wan-2-5.pro/v1", max_queue_wait=0))
+            self.assertGreater(raised.exception.wait_seconds, 5.0)
+
     def test_concurrent_tasks_are_serialized_before_external_post(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             calls = 0
@@ -221,10 +305,11 @@ class RuntimeIntegrationTests(unittest.TestCase):
 
             with patch.dict(os.environ, TEST_ENV, clear=False):
                 failures = asyncio.run(scenario())
-            self.assertEqual(calls, 1)
+            # Первый task исчерпывает primary и fallback до открытия circuit breaker.
+            self.assertEqual(calls, 2)
             self.assertEqual(failures, ["timeout", "circuit_open"])
 
-    def test_503_creates_work_order_and_repeat_skips_http(self) -> None:
+    def test_503_exhausts_dual_tier_then_repeat_skips_http(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             calls = 0
 
@@ -247,11 +332,12 @@ class RuntimeIntegrationTests(unittest.TestCase):
                     asyncio.run(request_omvl5_role_completion(**kwargs))
                 with self.assertRaises(CodexFallbackRequired) as second:
                     asyncio.run(request_omvl5_role_completion(**kwargs))
-            self.assertEqual(calls, 1)
+            # Первая попытка исчерпывает primary и fallback; повтор не делает HTTP.
+            self.assertEqual(calls, 2)
             self.assertEqual(first.exception.task_id, second.exception.task_id)
             self.assertTrue(Path(first.exception.work_order).is_file())
 
-    def test_timeout_has_unknown_outcome_and_is_not_retried(self) -> None:
+    def test_timeout_exhausts_dual_tier_and_repeat_is_not_retried(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             calls = 0
 
@@ -273,7 +359,60 @@ class RuntimeIntegrationTests(unittest.TestCase):
                 for _ in range(2):
                     with self.assertRaises(CodexFallbackRequired):
                         asyncio.run(request_omvl5_role_completion(**kwargs))
-            self.assertEqual(calls, 1)
+            self.assertEqual(calls, 2)
+
+    def test_timeout_on_primary_uses_fallback_before_native_work_order(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            calls = 0
+
+            def handler(request: httpx.Request) -> httpx.Response:
+                nonlocal calls
+                calls += 1
+                if calls == 1:
+                    raise httpx.ReadTimeout("slow", request=request)
+                return httpx.Response(
+                    200,
+                    json={"choices": [{"message": {"content": "ok"}}]},
+                    request=request,
+                )
+
+            with patch.dict(os.environ, TEST_ENV, clear=False):
+                result, route = asyncio.run(
+                    request_omvl5_role_completion(
+                        role="critic",
+                        messages=[{"role": "user", "content": "Проверка"}],
+                        transport=httpx.MockTransport(handler),
+                        task_id="runtime-timeout-fallback",
+                        resilience_store=ResilienceStore(Path(tmp)),
+                    )
+                )
+            self.assertEqual(calls, 2)
+            self.assertEqual(route, "critic_fallback")
+            self.assertEqual(result["choices"][0]["message"]["content"], "ok")
+
+    def test_contract_error_on_primary_uses_fallback_before_native_work_order(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            calls = 0
+
+            def handler(request: httpx.Request) -> httpx.Response:
+                nonlocal calls
+                calls += 1
+                payload = {} if calls == 1 else {"choices": [{"message": {"content": "ok"}}]}
+                return httpx.Response(200, json=payload, request=request)
+
+            with patch.dict(os.environ, TEST_ENV, clear=False):
+                result, route = asyncio.run(
+                    request_omvl5_role_completion(
+                        role="librarian",
+                        messages=[{"role": "user", "content": "Проверка"}],
+                        transport=httpx.MockTransport(handler),
+                        task_id="runtime-contract-fallback",
+                        resilience_store=ResilienceStore(Path(tmp)),
+                    )
+                )
+            self.assertEqual(calls, 2)
+            self.assertEqual(route, "librarian_fallback")
+            self.assertEqual(result["choices"][0]["message"]["content"], "ok")
 
 
 if __name__ == "__main__":

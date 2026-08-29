@@ -30,6 +30,7 @@ python3 scripts/kb_manager.py --task "seed" --status under_review
 ├── data/knowledge_base.seed.json                                # RAG-сид (схема 2.0)
 ├── scripts/                                                     # все скрипты и тесты
 ├── docs/                                                        # архитектура и протоколы
+├── opencode.example.json                                         # sanitized Wan25 aliases
 ├── tools/code-index-mcp/                                        # конфиг демона Code Index
 └── .github/hooks/omvl-workspace.json                            # пример hooks VS Code
 ```
@@ -44,8 +45,15 @@ python3 scripts/kb_manager.py --task "seed" --status under_review
 | `LDS_1C_BRIDGE_URL` | Endpoint CodexTestBridge | `http://127.0.0.1:18080/test-bridge` |
 | `LDS_NETWORK_PROXY_IP` | Прокси для WSL без Mirrored Networking | — |
 | `NEXUS_FORM_VALIDATOR` / `NEXUS_PYTHON_BIN` | Внешние валидаторы (опционально) | — |
+| `WAN25_GATEWAY_ENABLED` | Единый gateway для OMVL; `0` сохраняет role-specific routes | `0` |
+| `WAN25_API_KEY` | Локальный секрет общего gateway | — |
+| `CODER_API_BASE_URL` | OpenAI-compatible WAN25 endpoint | `https://apiai.wan-2-5.pro/v1` |
+| `WAN25_RPM_LIMIT` / `WAN25_MIN_INTERVAL_SECONDS` | Общий лимит и минимальный интервал | `10` / `6.0` |
 
 Секреты задаются только в `.env` (не коммитится); в репозитории — заглушка `.env.example`.
+URL gateway, имена моделей и sanitized placeholders разрешены в примерах. Текущий
+проверенный срез и runbook: [RU checkpoint](docs/WORKSPACE_RUNTIME_CHECKPOINT_2026-08-29.md)
+и [EN checkpoint](docs/WORKSPACE_RUNTIME_CHECKPOINT_2026-08-29.en.md).
 
 ## Верификация (Verification)
 
@@ -58,6 +66,19 @@ python3 -m pytest scripts -q
 ## Лицензия
 
 MIT, Copyright (c) 2026 PovAndy. Подробнее — `LICENSE`.
+
+## WAN25 gateway (English)
+
+The sanitized `.env.example` and `opencode.example.json` may contain the public
+gateway URL, provider model IDs, aliases, and empty placeholders. They must not
+contain real API keys, passwords, tokens, private endpoints, or runtime data.
+`WAN25_GATEWAY_ENABLED=1` enables one shared gateway/key for OMVL; `0` keeps
+role-specific rollback routes. The shared limiter enforces 10 RPM and at least
+6 seconds between calls, with bounded `429` retries and fallback routing.
+
+Current verified bilingual snapshot and Codex runbook:
+[Russian checkpoint](docs/WORKSPACE_RUNTIME_CHECKPOINT_2026-08-29.md) and
+[English checkpoint](docs/WORKSPACE_RUNTIME_CHECKPOINT_2026-08-29.en.md).
 
 ---
 

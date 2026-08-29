@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import inspect
 import json
 import os
@@ -24,6 +25,13 @@ from omvl_resilience import (
     classify_failure,
     safe_task_id,
 )
+from openrouter_rate_limit import (
+    Wan25QueueOverflow,
+    acquire_wan25_slot,
+    remember_retry_after,
+    wan25_base_url,
+    wan25_gateway_enabled,
+)
 
 
 PRIMARY_CODER_BASE_URL_ENV = "CODE_INDEX_PRODUCTION_API_BASE_URL"
@@ -32,30 +40,56 @@ PRIMARY_CODER_KEY_ENV = "CODE_INDEX_PRODUCTION_API_KEY"
 PAID_CHEAP_KEY_ENV = "OR_KEY_PAID_CHEAP"
 PAID_CHEAP_MODEL_ENV = "PAID_CRITIC_MODEL"
 OMVL5_COMMON_BASE_URL_ENV = "CODER_API_BASE_URL"
+WAN25_API_KEY_ENV = "WAN25_API_KEY"
 OMVL5_ROLE_SPECS: dict[str, dict[str, str]] = {
     "luna_implementer": {
         "model_env": "CODER_LUNA_MODEL",
         "key_env": "CODER_LUNA_API_KEY",
+        "base_url_env": "CODER_LUNA_API_BASE_URL",
         "fallback_model_env": "CODER_LUNA_FALLBACK_MODEL",
         "fallback_key_env": "CODER_LUNA_FALLBACK_API_KEY",
     },
     "sol_inspector": {
-        "model_env": "INSPECTOR_SOL_MODEL",
+        "model_env": "ORCHESTRATOR_MODEL",
         "key_env": "INSPECTOR_SOL_API_KEY",
-        "fallback_model_env": "INSPECTOR_SOL_FALLBACK_MODEL",
+        "base_url_env": "ORCHESTRATOR_API_BASE_URL",
+        "fallback_model_env": "ORCHESTRATOR_FALLBACK_MODEL",
+        "fallback_key_env": "INSPECTOR_SOL_FALLBACK_API_KEY",
+    },
+    "orchestrator": {
+        "model_env": "ORCHESTRATOR_MODEL",
+        "key_env": "INSPECTOR_SOL_API_KEY",
+        "base_url_env": "ORCHESTRATOR_API_BASE_URL",
+        "fallback_model_env": "ORCHESTRATOR_FALLBACK_MODEL",
         "fallback_key_env": "INSPECTOR_SOL_FALLBACK_API_KEY",
     },
     "critic": {
         "model_env": "CRITIC_MODEL",
         "key_env": "CRITIC_API_KEY",
+        "base_url_env": "CRITIC_API_BASE_URL",
         "fallback_model_env": "CRITIC_FALLBACK_MODEL",
         "fallback_key_env": "CRITIC_FALLBACK_API_KEY",
+    },
+    "librarian": {
+        "model_env": "LIBRARIAN_MODEL",
+        "key_env": "OR_KEY_PAID_CHEAP",
+        "base_url_env": "LIBRARIAN_API_BASE_URL",
+        "fallback_model_env": "LIBRARIAN_FALLBACK_MODEL",
+        "fallback_key_env": "OR_KEY_PAID_CHEAP",
     },
     "scribe": {
         "model_env": "SCRIBE_MODEL",
         "key_env": "SCRIBE_API_KEY",
+        "base_url_env": "SCRIBE_API_BASE_URL",
         "fallback_model_env": "SCRIBE_FALLBACK_MODEL",
         "fallback_key_env": "SCRIBE_FALLBACK_API_KEY",
+    },
+    "forensics": {
+        "model_env": "FORENSICS_MODEL",
+        "key_env": "OR_KEY_PAID_CHEAP",
+        "base_url_env": "FORENSICS_API_BASE_URL",
+        "fallback_model_env": "FORENSICS_FALLBACK_MODEL",
+        "fallback_key_env": "OR_KEY_PAID_CHEAP",
     },
 }
 CODER_CONNECT_TIMEOUT_ENV = "OMVL_CODER_CONNECT_TIMEOUT_SECONDS"
@@ -149,26 +183,32 @@ def _omvl5_base_url() -> str:
 
 
 def omvl5_role_routes() -> dict[str, dict[str, dict[str, str]]]:
-    """Возвращает primary и необязательные внешние fallback-маршруты ролей."""
+    """Возвращает маршруты ролей с opt-in единым WAN25 gateway."""
     load_omvl_env()
-    base_url = _omvl5_base_url()
     routes: dict[str, dict[str, dict[str, str]]] = {}
-    all_keys: list[str] = []
+    use_wan25 = wan25_gateway_enabled()
+    gateway_key = _env_or_file(WAN25_API_KEY_ENV, "").strip()
+    if use_wan25 and _is_placeholder_secret(gateway_key):
+        raise RuntimeError("WAN25 gateway включен, но WAN25_API_KEY не задан")
     for role, spec in OMVL5_ROLE_SPECS.items():
         model = _env_or_file(spec["model_env"], "").strip()
-        api_key = _env_or_file(spec["key_env"], "").strip()
+        api_key = gateway_key if use_wan25 else _env_or_file(spec["key_env"], "").strip()
+        base_url = wan25_base_url() if use_wan25 else _env_or_file(spec["base_url_env"], _omvl5_base_url()).strip().rstrip("/")
         fallback_model = _env_or_file(spec["fallback_model_env"], "").strip()
-        fallback_key = _env_or_file(spec["fallback_key_env"], "").strip()
+        fallback_key = gateway_key if use_wan25 else _env_or_file(spec["fallback_key_env"], "").strip()
+        # В изолированном режиме отдельный fallback-секрет необязателен:
+        # при его отсутствии используем уже настроенный секрет той же роли.
+        # Так каждая роль сохраняет свой credential, но не теряет второй tier.
+        if not use_wan25 and _is_placeholder_secret(fallback_key):
+            fallback_key = api_key
         if not model or _is_placeholder_secret(api_key):
-            raise RuntimeError(f"OMVL 5.0 роль {role} не готова: требуется primary model/key")
-        all_keys.append(api_key)
+            # Неактивные роли не делают готовые маршруты неработоспособными.
+            # Конкретный вызов ниже выдаст точную ошибку только для запрошенной роли.
+            continue
         role_routes: dict[str, dict[str, str]] = {
             "primary": {"name": role, "base_url": base_url, "model": model, "api_key": api_key}
         }
         if fallback_model and not _is_placeholder_secret(fallback_key):
-            if api_key == fallback_key:
-                raise RuntimeError(f"OMVL 5.0 роль {role} использует один ключ для primary и fallback")
-            all_keys.append(fallback_key)
             role_routes["fallback"] = {
                 "name": f"{role}_fallback",
                 "base_url": base_url,
@@ -178,8 +218,6 @@ def omvl5_role_routes() -> dict[str, dict[str, dict[str, str]]]:
         elif not _is_placeholder_secret(fallback_key):
             raise RuntimeError(f"OMVL 5.0 роль {role} имеет fallback key без fallback model")
         routes[role] = role_routes
-    if len(all_keys) != len(set(all_keys)):
-        raise RuntimeError("OMVL 5.0 нарушает изоляцию: API-ключ повторно назначен нескольким ролям")
     return routes
 
 
@@ -189,6 +227,11 @@ def _openai_chat_url(base_url: str) -> str:
     if normalized.endswith(("/api", "/v1")):
         return f"{normalized}/chat/completions"
     return f"{normalized}/v1/chat/completions"
+
+
+def openai_chat_url(base_url: str) -> str:
+    """Публичный helper для единообразного OpenAI-совместимого endpoint."""
+    return _openai_chat_url(base_url)
 
 
 async def request_omvl5_role_completion(
@@ -279,39 +322,72 @@ async def request_omvl5_role_completion(
             }
             try:
                 effective_timeout = min(coder_response_timeout(), response_timeout) if response_timeout else coder_response_timeout()
-                async with httpx.AsyncClient(
-                    **coder_httpx_client_kwargs(
-                        transport=transport,
-                        connect_timeout=coder_connect_timeout(),
-                        response_timeout=effective_timeout,
-                    )
-                ) as client:
-                    response = await client.post(
-                        _openai_chat_url(route["base_url"]),
-                        headers={"Authorization": f"Bearer {route['api_key']}"},
-                        json=payload,
-                    )
-                if response.status_code >= 400:
-                    failure_class = classify_failure(status_code=response.status_code)
-                    retry_after = None
-                    if response.status_code == 429:
+                last_failure_class = "unknown"
+                last_reason = "unknown"
+                ordered_routes = [route]
+                if "fallback" in role_routes[role]:
+                    ordered_routes.append(role_routes[role]["fallback"])
+                for route_index, current_route in enumerate(ordered_routes):
+                    for retry_index in range(3):
                         try:
-                            retry_after = float(response.headers.get("Retry-After", ""))
-                        except ValueError:
-                            retry_after = None
-                    store.record_failure(role, failure_class, retry_after=retry_after)
-                    raise require_native(failure_class, f"HTTP {response.status_code}")
-                response.raise_for_status()
-                try:
-                    result = _ensure_usable_coder_result(response.json())
-                    if response_validator is not None:
-                        response_validator(result)
-                except (json.JSONDecodeError, KeyError, TypeError, ValueError, RuntimeError) as exc:
-                    store.record_failure(role, "contract")
-                    raise require_native("contract", type(exc).__name__) from exc
-                store.record_success(role)
-                store.mark_complete(effective_task_id, result, route["name"])
-                return result, route["name"]
+                            if wan25_gateway_enabled():
+                                await acquire_wan25_slot(
+                                    current_route["api_key"],
+                                    current_route["model"],
+                                    base_url=current_route["base_url"],
+                                )
+                            async with httpx.AsyncClient(
+                                **coder_httpx_client_kwargs(
+                                    transport=transport,
+                                    connect_timeout=coder_connect_timeout(),
+                                    response_timeout=effective_timeout,
+                                )
+                            ) as client:
+                                response = await client.post(
+                                    _openai_chat_url(current_route["base_url"]),
+                                    headers={"Authorization": f"Bearer {current_route['api_key']}"},
+                                    json={**payload, "model": current_route["model"]},
+                                )
+                        except Wan25QueueOverflow as exc:
+                            last_failure_class = "rate_limit"
+                            last_reason = str(exc)
+                            # При переполнении primary сразу переходим к второму tier.
+                            break
+                        except (httpx.TimeoutException, httpx.RequestError) as exc:
+                            last_failure_class = classify_failure(exc=exc)
+                            last_reason = type(exc).__name__
+                            break
+                        if response.status_code == 429 and retry_index < 2:
+                            backoff_seconds = 7.0 * (2**retry_index)
+                            remember_retry_after(
+                                current_route["api_key"],
+                                current_route["model"],
+                                response.headers.get("Retry-After"),
+                                base_url=current_route["base_url"],
+                                minimum_delay=backoff_seconds,
+                            )
+                            await asyncio.sleep(backoff_seconds)
+                            continue
+                        if response.status_code >= 400:
+                            last_failure_class = classify_failure(status_code=response.status_code)
+                            last_reason = f"HTTP {response.status_code}"
+                            break
+                        response.raise_for_status()
+                        try:
+                            result = _ensure_usable_coder_result(response.json())
+                            if response_validator is not None:
+                                response_validator(result)
+                        except (json.JSONDecodeError, KeyError, TypeError, ValueError, RuntimeError) as exc:
+                            last_failure_class = "contract"
+                            last_reason = type(exc).__name__
+                            break
+                        store.record_success(role)
+                        store.mark_complete(effective_task_id, result, current_route["name"])
+                        return result, current_route["name"]
+                    if route_index == 0 and len(ordered_routes) > 1:
+                        continue
+                store.record_failure(role, last_failure_class)
+                raise require_native(last_failure_class, last_reason)
             except CodexFallbackRequired:
                 raise
             except (httpx.TimeoutException, httpx.RequestError, httpx.HTTPStatusError, json.JSONDecodeError, RuntimeError) as exc:
