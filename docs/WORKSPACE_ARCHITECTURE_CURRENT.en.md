@@ -1,5 +1,7 @@
 # Current workspace architecture: English overview
 
+Latest public bilingual checkpoint: [2026-10-06 EN](WORKSPACE_CHECKPOINT_2026-10-06.en.md) / [RU](WORKSPACE_CHECKPOINT_2026-10-06.md).
+
 This is the English navigation companion to the detailed Russian architecture
 reference: [WORKSPACE_ARCHITECTURE_CURRENT.md](WORKSPACE_ARCHITECTURE_CURRENT.md).
 The Russian document remains canonical when details differ.

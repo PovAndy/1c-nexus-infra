@@ -82,6 +82,12 @@ def тест_graph_ensure_and_watch(база: Path) -> dict[str, Any]:
     )
     пути = graph_manager.построить_пути(корень)
 
+    # Архивы исключаются до чтения содержимого независимо от регистра и глубины.
+    for относительный in ("Archive", "nested/archive", "nested/ARCHIVE"):
+        архив = корень / относительный
+        архив.mkdir(parents=True)
+        (архив / "invalid.py").write_text("def broken(:\n", encoding="utf-8")
+
     обновлен, _ = graph_manager.обеспечить_актуальность(
         пути, причина="test:first"
     )
@@ -94,6 +100,10 @@ def тест_graph_ensure_and_watch(база: Path) -> dict[str, Any]:
     начальный_граф = json.loads(пути.граф.read_text(encoding="utf-8"))
     assert начальный_граф["parse_error_files"] == 0
     assert начальный_граф["parse_errors"] == []
+    assert not any(
+        "archive" in узел.casefold().split("/")
+        for узел in идентификаторы_графа(пути.граф)
+    )
     assert "context/mempalace/vendor/third_party.py" not in идентификаторы_графа(
         пути.граф
     )

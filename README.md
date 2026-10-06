@@ -50,10 +50,11 @@ python3 scripts/kb_manager.py --task "seed" --status under_review
 | `CODER_API_BASE_URL` | OpenAI-compatible WAN25 endpoint | `https://apiai.wan-2-5.pro/v1` |
 | `WAN25_RPM_LIMIT` / `WAN25_MIN_INTERVAL_SECONDS` | Общий лимит и минимальный интервал | `10` / `6.0` |
 
-Секреты задаются только в `.env` (не коммитится); в репозитории — заглушка `.env.example`.
-URL gateway, имена моделей и sanitized placeholders разрешены в примерах. Текущий
-проверенный срез и runbook: [RU checkpoint](docs/WORKSPACE_RUNTIME_CHECKPOINT_2026-08-29.md)
-и [EN checkpoint](docs/WORKSPACE_RUNTIME_CHECKPOINT_2026-08-29.en.md).
+Секреты задаются только в локальном `.env` (не коммитится); в репозитории — заглушка `.env.example`.
+URL gateway, имена моделей и sanitized placeholders разрешены в примерах. Последняя
+проверенная контрольная точка и Codex runbook: [RU checkpoint](docs/WORKSPACE_CHECKPOINT_2026-10-06.md)
+и [EN checkpoint](docs/WORKSPACE_CHECKPOINT_2026-10-06.en.md). Предыдущая контрольная
+точка WAN25 от 2026-08-29 сохранена как историческая.
 
 ## Верификация (Verification)
 
@@ -76,9 +77,10 @@ contain real API keys, passwords, tokens, private endpoints, or runtime data.
 role-specific rollback routes. The shared limiter enforces 10 RPM and at least
 6 seconds between calls, with bounded `429` retries and fallback routing.
 
-Current verified bilingual snapshot and Codex runbook:
-[Russian checkpoint](docs/WORKSPACE_RUNTIME_CHECKPOINT_2026-08-29.md) and
-[English checkpoint](docs/WORKSPACE_RUNTIME_CHECKPOINT_2026-08-29.en.md).
+Latest verified bilingual snapshot and Codex runbook:
+[Russian checkpoint](docs/WORKSPACE_CHECKPOINT_2026-10-06.md) and
+[English checkpoint](docs/WORKSPACE_CHECKPOINT_2026-10-06.en.md). The 2026-08-29
+WAN25 checkpoint is retained as historical reference.
 
 ---
 

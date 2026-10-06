@@ -20,7 +20,7 @@ from tree_sitter import Node
 from tree_sitter_languages import get_parser
 
 
-КОРЕНЬ_ПРОЕКТА = Path(os.getenv("NEXUS_WORKSPACE_ROOT", Path(__file__).resolve().parent.parent))
+КОРЕНЬ_ПРОЕКТА = Path(__file__).resolve().parents[1]
 ПУТЬ_ГРАФА = КОРЕНЬ_ПРОЕКТА / "temp" / "workspace_graph_v2.json"
 
 РАСШИРЕНИЯ = {
@@ -118,6 +118,7 @@ def каталог_игнорируется(имя: str) -> bool:
     """Проверяет каталог по контракту исключений."""
     return (
         имя in ИГНОРИРУЕМЫЕ_КАТАЛОГИ
+        or имя.casefold() == "archive"
         or имя.startswith(".venv")
         or "pycache" in имя.lower()
     )
