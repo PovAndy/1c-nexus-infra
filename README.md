@@ -2,6 +2,23 @@
 
 > Автономная инфраструктура рабочей среды 1С-разработчика: Graph V2, RAG FSM 2.0, prompt-контракт, Best-of-N BSL-оценка и MCP-мосты. Standalone, portable, без хардкод-путей и секретов.
 
+## Версия и состояние среды / Version and workspace state
+
+Текущий выпуск: **1.0.1**. Он фиксирует переносимое состояние
+инфраструктурного репозитория на 2026-10-29: состав инструментов,
+безопасные границы, результаты проверок и известные ограничения среды.
+Снимок не содержит секретов, кэшей, журналов, артефактов конкретных баз 1С
+или содержимого рабочих проектов.
+
+The current release is **1.0.1**. It records the portable infrastructure
+repository state as of 2026-10-29: tool inventory, safety boundaries,
+verification results, and known environment limitations. The snapshot excludes
+secrets, caches, logs, database artifacts, and source content from workspace
+projects.
+
+- Русский снимок: [WORKSPACE_STATE_2026-10-29.md](docs/WORKSPACE_STATE_2026-10-29.md)
+- English snapshot: [WORKSPACE_STATE_2026-10-29.en.md](docs/WORKSPACE_STATE_2026-10-29.en.md)
+
 ## Состав (Composition)
 
 | Компонент | Назначение |

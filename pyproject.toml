@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "1c-nexus-infra"
-version = "1.0.0"
-description = "Autonomous 1C workspace infrastructure: Graph V2, RAG FSM 2.0, prompt-cache contract, Best-of-N BSL evaluator."
+version = "1.0.1"
+description = "Portable 1C workspace infrastructure: Graph V2, RAG lifecycle, prompt-contract validation, BSL evaluation, and MCP bridge helpers."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
