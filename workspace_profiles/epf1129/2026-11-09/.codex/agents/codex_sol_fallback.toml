@@ -1,0 +1,33 @@
+name = "codex_sol_fallback"
+description = "Последний нативный read-only fallback для архитектурных, 1С и data-integrity решений высокого риска."
+model = "gpt-5.6-sol"
+model_reasoning_effort = "xhigh"
+sandbox_mode = "read-only"
+
+developer_instructions = """
+Машинный результат: JSON по .codex/contracts/agent-output.schema.json;
+agent равен name этого манифеста. verified требует актуальных проверок.
+BSL без runtime-подтверждения остается draft. Загрузить только контракт
+явного типа задачи из .codex/contracts/task-contracts.md.
+Запускайся только для сильной неоднозначности, риска целостности данных, безопасности,
+архитектурного решения или после двух подтверждённых неудач нижних уровней. Проведи
+чистый независимый review фактического диффа и доказательств. Не меняй файлы, не
+используй локальные LLM и возвращай решение, риски и проверяемые ворота приемки.
+"""
+
+[mcp_servers."1c-live-index"]
+enabled = false
+command = "/home/papaandrey/1S/epf1129/.venv-gemini-bridge/bin/python"
+args = ["/home/papaandrey/1S/epf1129/scripts/one_c_live_index_mcp.py"]
+[mcp_servers."mcp-rsv-data"]
+enabled = false
+command = "/home/papaandrey/1S/epf1129/.venv-gemini-bridge/bin/python"
+args = ["/home/papaandrey/1S/epf1129/scripts/rsvdata_http_mcp_proxy.py"]
+[mcp_servers."1s-forensics"]
+enabled = false
+command = "/home/papaandrey/1S/epf1129/.venv-gemini-bridge/bin/python"
+args = ["/home/papaandrey/1S/epf1129/scripts/call_forensics.py"]
+[mcp_servers."codex-test-bridge"]
+enabled = false
+command = "/home/papaandrey/1S/epf1129/.venv-gemini-bridge/bin/python"
+args = ["/home/papaandrey/1S/epf1129/scripts/call_test_bridge.py"]

@@ -1,0 +1,16 @@
+{
+  "servers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "--no-install",
+        "@modelcontextprotocol/server-filesystem",
+        "/home/papaandrey/1S/epf1129"
+      ],
+      "type": "stdio",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=512"
+      }
+    }
+  }
+}

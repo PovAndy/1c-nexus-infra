@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "growth_compaction_tokens": 160000,
+  "compaction_scope": "body_after_prefix",
+  "tool_output_token_limit": 1024,
+  "pod_max_files": 5,
+  "pod_max_payload_bytes": 12000,
+  "pod_tool_calls_advisory": 3,
+  "phase_checkpoint_interval": 8,
+  "same_failure_strategy_change_after": 2,
+  "automatic_session_termination": false,
+  "history_eviction_by_prompt": false,
+  "external_models_enabled": false,
+  "handover_requires_verified_gates": true
+}

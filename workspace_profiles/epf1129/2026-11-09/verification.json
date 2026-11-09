@@ -1,0 +1,29 @@
+{
+  "verified_at_utc": "2026-11-09T08:12:37.630842+00:00",
+  "snapshot_version": "workspace-2026.11.09",
+  "source_copies": "40/40 byte-identical",
+  "snapshot_fixture_tests": "19/19 PASS",
+  "active_workspace_gates": "8/8 PASS",
+  "rag_error_records": 22,
+  "rag_retrieval": "22/22 PASS",
+  "rag_schema": "2.0 PASS; indexes actual",
+  "infrastructure_prompt_contract": "PASS; original 17016-byte family unchanged",
+  "snapshot_prompt_contract": "PASS; project 15632-byte family unchanged",
+  "python_syntax": "PASS",
+  "documentation_links": "PASS",
+  "runtime_status": "PARTIAL_PRESERVED_WORK",
+  "remaining_runtime_limits": {
+    "tracked_changes": 358,
+    "untracked_entries": 480,
+    "raw_diff_bytes": 42056882,
+    "clean_session_confirmed": false,
+    "filesystem_mcp_transport": "Transport closed; bounded native fallback used"
+  },
+  "credential_values_included": false,
+  "private_rag_database_included": false,
+  "business_sources_or_epf_included": false,
+  "snapshot_manifest_sha256": "022f6c812f313b485e85e0d4d9907284a83e1f33cd88f54a4cb4c412a84d58b9",
+  "active_workspace_gate_log": "temp/tool_logs/20261109T081119Z_1794211879208963874_01e9892229723dc8.log",
+  "snapshot_test_log": "temp/tool_logs/20261109T080935Z_1794211775740233546_203a27c063045d60.log",
+  "all_source_scopes_rechecked": true
+}

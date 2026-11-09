@@ -1,0 +1,38 @@
+# Context governance: scoped to this workspace; takes effect in new sessions.
+model = "gpt-6.1-sol"
+model_reasoning_effort = "high"
+model_auto_compact_token_limit = 160000
+model_auto_compact_token_limit_scope = "body_after_prefix"
+tool_output_token_limit = 4096
+compact_prompt = """Summarize the active task in Russian for continuation. Preserve the user's goal, scope, authorizations, constraints, current verified facts, blockers and exact next action. Link to on-disk evidence with hashes and freshness; distinguish PASS, FAIL and unverified state. Preserve read-only x1_XX, no direct base02 writes, dedicated Form.xml skills, immutable static prefix, external-model prohibition and paused Block [28]. Keep local changes distinct from committed or deployed artifacts. Preserve gate failures; never invent 8/8 PASS. Omit raw logs, full source modules, repeated instructions, secrets and hidden reasoning. Retain unresolved user requests and corrections. A checkpoint is not task completion. Use concise evidence-backed text."""
+
+[agents]
+max_threads = 1
+# Previous default_subagent_model/default_subagent_reasoning_effort keys are
+# unsupported by installed Codex 0.139.0. Preserve their intent in this role.
+[agents.token_worker]
+description = "Independent bounded read-only task from a disk card; no parent history or nested delegation."
+config_file = "/home/papaandrey/1S/epf1129/.codex/agents/token-worker.toml"
+
+[mcp_servers."mempalace"]
+enabled = false
+command = "/home/papaandrey/1S/epf1129/.venv-gemini-bridge/bin/python"
+args = ["/home/papaandrey/.codex/scripts/mcp_stdio_compat_proxy.py", "--", "/home/papaandrey/1S/epf1129/scripts/run-mempalace-mcp.sh"]
+
+[mcp_servers."sequential-thinking"]
+enabled = false
+command = "/home/papaandrey/1S/epf1129/.venv-gemini-bridge/bin/python"
+args = ["/home/papaandrey/.codex/scripts/mcp_stdio_compat_proxy.py", "--", "npx", "-y", "@modelcontextprotocol/server-sequential-thinking"]
+
+# Use the verified native Windows transport for the existing base02 publication.
+[mcp_servers."mcp-rsv-data"]
+enabled = true
+startup_timeout_sec = 30
+command = "/home/papaandrey/1S/epf1129/.venv-gemini-bridge/bin/python"
+args = ["-m", "scripts.mcp_host_gateway_launcher", "--server-id", "mcp-rsv-data", "--endpoint-env", "RSVDATA_MCP_URL"]
+cwd = "/home/papaandrey/1S/epf1129"
+
+[mcp_servers."codex-test-bridge"]
+command = "/home/papaandrey/1S/epf1129/.venv-gemini-bridge/bin/python"
+args = ["-m", "scripts.mcp_host_gateway_launcher", "--server-id", "codex-test-bridge", "--endpoint-env", "LDS_1C_BRIDGE_URL_IP"]
+cwd = "/home/papaandrey/1S/epf1129"

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://1c-syntax.github.io/bsl-language-server/configuration/schema.json",
+  "language": "ru",
+  "diagnostics": {
+    "computeTrigger": "onSave",
+    "skipSupport": "withSupport",
+    "parameters": {
+      "CognitiveComplexity": {
+        "complexityThreshold": 25
+      },
+      "CyclomaticComplexity": {
+        "complexityThreshold": 20
+      },
+      "LineLength": {
+        "maxLineLength": 140
+      }
+    }
+  }
+}

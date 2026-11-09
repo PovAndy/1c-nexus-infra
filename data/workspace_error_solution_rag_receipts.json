@@ -1,0 +1,162 @@
+{
+  "schema_version": "1.0",
+  "recorded_at_utc": "2026-11-09T08:06:21.824461+00:00",
+  "private_rag_exported": false,
+  "catalog_sha256": "b7b737bd6b2264da574884735a1433c9ad6a3bbd819fcc358fe20864a00365f4",
+  "records": [
+    {
+      "catalog_id": "NEXUS-ENV-001",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-001-receipts-e4792a2978",
+      "lifecycle_status": "under_review",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "scripts/workspace_runtime_receipts.py; test_successful_gate_receipt_can_be_refreshed"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-002",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-002-scheduled-action-86a7fee403",
+      "lifecycle_status": "under_review",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "scripts/restart_workspace_extension_host.py; EXTENSION_HOST_RESTART_RESULT.json"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-003",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-003-gateway-3f64a026c4",
+      "lifecycle_status": "under_review",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "scripts/mcp_host_gateway_launcher.py; MCP initialize/tools-list preflight"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-004",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-004-gateway-identity-539ffaaacb",
+      "lifecycle_status": "under_review",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "windows_gateway; WINDOWS_HOST_DISCOVERY.json"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-005",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-005-target-url-4c3c222512",
+      "lifecycle_status": "under_review",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "pin_rsv_target_url; test_target_specific_url_cannot_reintroduce_stale_gateway"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-006",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-006-role-path-a5320d89d7",
+      "lifecycle_status": "under_review",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "update_toml; test_role_path_is_compatible_with_installed_cli"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-007",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-007-codex-schema-134f2183fc",
+      "lifecycle_status": "under_review",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "codex features list; configuration reference"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-008",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-008-bsl-schema-bd1a474b06",
+      "lifecycle_status": "under_review",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": ".bsl-language-server.json; BSL configuration schema"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-009",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-009-mcp-schema-ca4235fd99",
+      "lifecycle_status": "under_review",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "stabilize_workspace.configuration_checks"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-010",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-010-heap-rss-2177ee9bd2",
+      "lifecycle_status": "partial",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "STABILIZATION_REPORT; process samples"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-011",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-011-pid-reuse-bb34511947",
+      "lifecycle_status": "under_review",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "restart_workspace_extension_host.identity; test_python_and_missing_pid_are_not_extension_hosts"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-012",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-012-git-count-eff5fe32ff",
+      "lifecycle_status": "under_review",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "SOL_OPTIMIZATION_BASELINE; staged fingerprint checks"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-013",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-013-tracked-diff-93cc4b56a8",
+      "lifecycle_status": "partial",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "FINAL_CONVERGENCE_STATUS.json"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-014",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-014-archive-82a8e799ac",
+      "lifecycle_status": "under_review",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "sanitize_workspace_temp; finalize_workspace_environment; archive regression tests"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-015",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-015-duplicate-46b66b78b0",
+      "lifecycle_status": "under_review",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "identical_original; test_unique_copy_is_not_a_disposable_duplicate"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-016",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-016-context-economics-3e53051ce5",
+      "lifecycle_status": "under_review",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "Compaction audit methodology; official model/config references"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-017",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-017-unmeasured-sla-e8407884f8",
+      "lifecycle_status": "partial",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "FINAL_CONVERGENCE_STATUS; measured Git timings"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-018",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-018-runtime-budget-1adda67f7c",
+      "lifecycle_status": "under_review",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "FINAL_MODEL_RECHECK; test_dynamic_rules_can_change_but_static_prefix_cannot"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-019",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-019-pydantic-3875a92447",
+      "lifecycle_status": "under_review",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "Pydantic v2 report validation"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-020",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-020-python-invocation-6f7902c64c",
+      "lifecycle_status": "under_review",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "19-test regression suite; interpreter/version metadata"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-021",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-021-tool-transport-1d09cd4a88",
+      "lifecycle_status": "partial",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "Current filesystem MCP incident; native bounded instruction read"
+    },
+    {
+      "catalog_id": "NEXUS-ENV-022",
+      "rag_record_id": "kb-auto-dev-env-nexus-env-022-context-output-c1caff9458",
+      "lifecycle_status": "under_review",
+      "provenance_rule_source": "task_observer",
+      "technical_verification": "scripts/silent_runner.py; bounded verification summaries"
+    }
+  ]
+}

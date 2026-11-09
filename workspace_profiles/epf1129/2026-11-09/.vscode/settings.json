@@ -1,0 +1,46 @@
+{
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/.venv*/**": true,
+    "**/temp/**": true,
+    "**/archive/**": true,
+    "**/build/**": true,
+    "**/__pycache__/**": true,
+    "**/.git/**": true,
+    "**/.code-index/**": true,
+    "**/logs/**": true,
+    "**/*.epf": true,
+    "**/context/config-dumps/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.venv*": true,
+    "**/temp": true,
+    "**/archive": true,
+    "**/build": true,
+    "**/*.epf": true,
+    "**/.git": true,
+    "**/__pycache__": true,
+    "**/.code-index": true,
+    "**/logs": true,
+    "**/context/config-dumps": true
+  },
+  "git.autorefresh": false,
+  "git.statusLimit": 1500,
+  "C_Cpp.intelliSenseEngine": "disabled",
+  "files.autoSave": "off",
+  "language-1c-bsl.languageServerEnabled": true,
+  "language-1c-bsl.languageServerConfiguration": ".bsl-language-server.json",
+  "language-1c-bsl.trace.server": "off",
+  "git.repositoryScanIgnoredFolders": [
+    "node_modules",
+    "context/config-dumps",
+    "temp",
+    "archive",
+    "Archive",
+    "build",
+    ".venv-gemini-bridge"
+  ]
+}

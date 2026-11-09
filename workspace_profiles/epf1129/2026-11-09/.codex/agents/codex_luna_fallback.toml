@@ -1,0 +1,33 @@
+name = "codex_luna_fallback"
+description = "Недорогой нативный fallback после исчерпания облачного каскада для узкой, однозначной реализации."
+model = "gpt-5.6-luna"
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+
+developer_instructions = """
+Машинный результат: JSON по .codex/contracts/agent-output.schema.json;
+agent равен name этого манифеста. verified требует актуальных проверок.
+BSL без runtime-подтверждения остается draft. Загрузить только контракт
+явного типа задачи из .codex/contracts/task-contracts.md.
+Запускайся только после подтверждённой недоступности или исчерпания cloud-fallback
+той же роли. Выполняй одну узкую задачу по Graph/RAG-доказательствам, без
+архитектурных предположений. Для BSL возвращай [UNVERIFIED_DRAFT], затем передавай
+результат на sanitize_bsl_output() и независимый review. Не используй локальные LLM.
+"""
+
+[mcp_servers."1c-live-index"]
+enabled = false
+command = "/home/papaandrey/1S/epf1129/.venv-gemini-bridge/bin/python"
+args = ["/home/papaandrey/1S/epf1129/scripts/one_c_live_index_mcp.py"]
+[mcp_servers."mcp-rsv-data"]
+enabled = false
+command = "/home/papaandrey/1S/epf1129/.venv-gemini-bridge/bin/python"
+args = ["/home/papaandrey/1S/epf1129/scripts/rsvdata_http_mcp_proxy.py"]
+[mcp_servers."1s-forensics"]
+enabled = false
+command = "/home/papaandrey/1S/epf1129/.venv-gemini-bridge/bin/python"
+args = ["/home/papaandrey/1S/epf1129/scripts/call_forensics.py"]
+[mcp_servers."codex-test-bridge"]
+enabled = false
+command = "/home/papaandrey/1S/epf1129/.venv-gemini-bridge/bin/python"
+args = ["/home/papaandrey/1S/epf1129/scripts/call_test_bridge.py"]

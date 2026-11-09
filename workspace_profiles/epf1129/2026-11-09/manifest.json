@@ -1,0 +1,263 @@
+{
+  "snapshot_version": "workspace-2026.11.09",
+  "created_at_utc": "2026-11-09T08:01:04.711070+00:00",
+  "kind": "machine-bound workspace settings and infrastructure source snapshot; not a Python package release",
+  "files": [
+    {
+      "path": "scripts/silent_runner.py",
+      "scope": "project",
+      "bytes": 5674,
+      "sha256": "6e6b39f85d3a547fbf108f51e47ae11bec83fe01f7fc2f14255e5309c5ee2fae"
+    },
+    {
+      "path": "scripts/session_breaker.py",
+      "scope": "project",
+      "bytes": 7814,
+      "sha256": "9a1ba9ec903a9c4c4ad2061d77fbb937c7db1ac1f6dd2c73fa42276b0a557a2e"
+    },
+    {
+      "path": "scripts/reconcile_reality.py",
+      "scope": "project",
+      "bytes": 6761,
+      "sha256": "982981fca877975815af85055a6218be562da3d65f021a9a2706264cca1f1379"
+    },
+    {
+      "path": "scripts/gate_check.py",
+      "scope": "project",
+      "bytes": 12027,
+      "sha256": "c747f64cc18c5a4c70efc9f0efd09625be1fc5dd760681a09746a73b11592ed9"
+    },
+    {
+      "path": "scripts/stabilize_workspace.py",
+      "scope": "project",
+      "bytes": 20776,
+      "sha256": "4eedd1135845d74a7cde5862d98f916b8701fbd39c301a36b52d81180ab4f438"
+    },
+    {
+      "path": "scripts/sanitize_workspace_temp.py",
+      "scope": "project",
+      "bytes": 13102,
+      "sha256": "92a88ba90f21cc1d7ab468f022fb31fa430d35152175980591bc5afb22c4b219"
+    },
+    {
+      "path": "scripts/restart_workspace_extension_host.py",
+      "scope": "project",
+      "bytes": 5625,
+      "sha256": "135ac3977da7b2512010b009b06a1a737d6a3c7cf57caa025e3dd260be0e78a3"
+    },
+    {
+      "path": "scripts/mcp_host_gateway_launcher.py",
+      "scope": "project",
+      "bytes": 6159,
+      "sha256": "5505c91fcf4105a7f515e9bfd16900fcea21a2082684f0f691b46707d6dd8c56"
+    },
+    {
+      "path": "scripts/workspace_runtime_receipts.py",
+      "scope": "project",
+      "bytes": 4662,
+      "sha256": "3e5cd3622701250debfbf556a47f6ee4772c56deb55a0505e6cf81250a3e71ab"
+    },
+    {
+      "path": "scripts/finalize_workspace_environment.py",
+      "scope": "project",
+      "bytes": 13426,
+      "sha256": "2764d1cffabcf44b0e246d231cd38b5658b26ade64de23e5b1ab79b9e7f8f6c8"
+    },
+    {
+      "path": "scripts/test_stabilize_workspace.py",
+      "scope": "project",
+      "bytes": 5369,
+      "sha256": "06df77e0e7b8ee6915a7d6d38f7c4d007c3c4e5d79a4e8a8fc5069b48086d275"
+    },
+    {
+      "path": "scripts/test_sol_workspace_optimization.py",
+      "scope": "project",
+      "bytes": 4818,
+      "sha256": "402f0c1f8470def9bf75b381dbe1cca3f1a2b494f93f53eb1813a186d6b0b70d"
+    },
+    {
+      "path": "scripts/test_workspace_runtime_receipts.py",
+      "scope": "project",
+      "bytes": 5586,
+      "sha256": "7926eab2f96ce9750a9d3efaab02fa89b1817008faaadb05669cb521f2c96d73"
+    },
+    {
+      "path": ".bsl-language-server.json",
+      "scope": "project",
+      "bytes": 437,
+      "sha256": "54a3c22daf91ac36117e961f1c362c43303e8b5ae1d8fa8bec4b2c98b926e8fc"
+    },
+    {
+      "path": ".codex/config.toml",
+      "scope": "project",
+      "bytes": 2579,
+      "sha256": "79fa6d4114271174245b1eeea5cda95deff48616ecc672466595220f6cdc929b"
+    },
+    {
+      "path": ".codex/context_governance.json",
+      "scope": "project",
+      "bytes": 461,
+      "sha256": "636fca370419451855e81b1cbd66babe8208da84ce0e3f6807e91967a4357659"
+    },
+    {
+      "path": ".codex/contracts/task-contracts.md",
+      "scope": "project",
+      "bytes": 4963,
+      "sha256": "20fb8046ad196b783f9b4d512bcd889eeb303eb049b0120091726fa71ea166d0"
+    },
+    {
+      "path": ".vscode/settings.json",
+      "scope": "project",
+      "bytes": 1179,
+      "sha256": "cfd8fd206d9d9a202b3e3ae9ef29a227b8272c6834844c874abae71756419b7e"
+    },
+    {
+      "path": ".vscode/mcp.json",
+      "scope": "project",
+      "bytes": 300,
+      "sha256": "0de5ba2a0614b2aaf6ff15b41dc7b6525ccc4b9edefae014836bab7a56660cad"
+    },
+    {
+      "path": ".clinerules",
+      "scope": "project",
+      "bytes": 21360,
+      "sha256": "177c7291da8665560f65725dbb5590421909436b475d6095c08519ab2b93a877"
+    },
+    {
+      "path": ".cursorrules",
+      "scope": "project",
+      "bytes": 21360,
+      "sha256": "177c7291da8665560f65725dbb5590421909436b475d6095c08519ab2b93a877"
+    },
+    {
+      "path": "AGENTS.md",
+      "scope": "project",
+      "bytes": 21360,
+      "sha256": "177c7291da8665560f65725dbb5590421909436b475d6095c08519ab2b93a877"
+    },
+    {
+      "path": "system_prompt.md",
+      "scope": "project",
+      "bytes": 21360,
+      "sha256": "177c7291da8665560f65725dbb5590421909436b475d6095c08519ab2b93a877"
+    },
+    {
+      "path": ".codex/agents/codex_terra_fallback.toml",
+      "scope": "project",
+      "bytes": 2100,
+      "sha256": "eb2b1cad820e92dc8e5ce166c5638779901ae8499d8c6a8047b53ddd5ab0fe01"
+    },
+    {
+      "path": ".codex/agents/codex_luna_fallback.toml",
+      "scope": "project",
+      "bytes": 2025,
+      "sha256": "eb43a2389b000b7d64cc538fc794cd57a0c0952fe038017e1db1d8ebd635e755"
+    },
+    {
+      "path": ".codex/agents/codex_sol_fallback.toml",
+      "scope": "project",
+      "bytes": 2072,
+      "sha256": "d942450fd4fced274c0ff64859d42fe233a833cc9b190893dfc846a1b804ade1"
+    },
+    {
+      "path": ".codex/agents/token-worker.toml",
+      "scope": "project",
+      "bytes": 84,
+      "sha256": "12822b243e95b4288d619ac586d72ecb139a05fc6763ff51f2539e7d8dbfd5b4"
+    },
+    {
+      "path": ".codex/roles/luna_implementer.toml",
+      "scope": "project",
+      "bytes": 1296,
+      "sha256": "642eac0479fb7fe17d0041d36fbae80ccdc946b99a0c55e2aa165044a2073ee7"
+    },
+    {
+      "path": ".codex/roles/sol_inspector.toml",
+      "scope": "project",
+      "bytes": 1278,
+      "sha256": "0b29e7078854faddc7327dc6c4cd5b718c70516386c615d1da6c3f3420ae0d17"
+    },
+    {
+      "path": "parent_workspace/.codex/config.toml",
+      "scope": "parent_workspace",
+      "bytes": 2669,
+      "sha256": "2b3d29cc86c95612e00f0a7b113e1b0245672ae8b63dac1f4b11df2bbf7c8643"
+    },
+    {
+      "path": "parent_workspace/.vscode/settings.json",
+      "scope": "parent_workspace",
+      "bytes": 2264,
+      "sha256": "fd9ca26eabcb69e88d65f41b9d7732defc3d896d977068d6ab8dbff47491a9d3"
+    },
+    {
+      "path": "parent_workspace/.vscode/mcp.json",
+      "scope": "parent_workspace",
+      "bytes": 308,
+      "sha256": "d061814e480094629f566f5cd8e6afc08c5038af6d604361e023c0dc5edb1822"
+    },
+    {
+      "path": "git-local/info-exclude",
+      "scope": "git_local",
+      "bytes": 479,
+      "sha256": "57930fa4d789c0a9bef58d2899b4f1cad1e890ed1b92f8ce92a015436d914483"
+    },
+    {
+      "path": "docs/WORKSPACE_STABILIZATION_2026-11-08.md",
+      "scope": "project",
+      "bytes": 8144,
+      "sha256": "333eb624603e5a5cba6e2bcf43067b28a273f2ca006c2301b3d4e0b9943ec52f"
+    },
+    {
+      "path": "docs/WORKSPACE_STABILIZATION_2026-11-08.en.md",
+      "scope": "project",
+      "bytes": 4298,
+      "sha256": "dde8b575bc8712edce30672dbac5238ff01e83932d4360af86c63e2086582f15"
+    },
+    {
+      "path": "docs/GPT_6_1_SOL_WORKSPACE_PROFILE_2026-11-08.md",
+      "scope": "project",
+      "bytes": 7255,
+      "sha256": "d7372af89e7f656f3ff6e31741924249a97b23dd49111b6c003027e2f7033479"
+    },
+    {
+      "path": "docs/GPT_6_1_SOL_WORKSPACE_PROFILE_2026-11-08.en.md",
+      "scope": "project",
+      "bytes": 3634,
+      "sha256": "21bb7cc69f37e711f3743ab2291b6bdc579b5346d6a180ca078c33dd84292407"
+    },
+    {
+      "path": "docs/WORKSPACE_RUNTIME_CONVERGENCE_2026-11-09.md",
+      "scope": "project",
+      "bytes": 8965,
+      "sha256": "f8d33e6e76b185165dd18847ce4a8bd17d5ba0ce2bef43677ee46ecac41b5995"
+    },
+    {
+      "path": "docs/WORKSPACE_RUNTIME_CONVERGENCE_2026-11-09.en.md",
+      "scope": "project",
+      "bytes": 3983,
+      "sha256": "ea2d663b4a97d95de74f4e60eb92f46495be46cc0b32fd6a455b471dad15e2d5"
+    },
+    {
+      "path": "GATES.md",
+      "scope": "project",
+      "bytes": 5195,
+      "sha256": "5475f480515c0fdb85ab25057f3b9dbb105040377327cfd1536ae8c2982dc269"
+    }
+  ],
+  "git_local_options": {
+    "core.untrackedCache": "true"
+  },
+  "secrets_included": false,
+  "private_rag_included": false,
+  "business_sources_included": false,
+  "epf_included": false,
+  "logs_and_archives_included": false,
+  "root_profile_static_prefix_bytes": 15632,
+  "root_profile_static_prefix_sha256": "bd29af5ec66654834aa0c497e73f8a6fa56b04ce08c6ca1e0c0d2d9e8ab4ab4b",
+  "existing_workspace_prerequisites": [
+    "build/compiled.epf (not included)",
+    "src/ business modules (not included)",
+    "global Codex credentials and MCP original commands (not included)",
+    "existing workspace validation/navigation infrastructure referenced by GATES.md"
+  ]
+}

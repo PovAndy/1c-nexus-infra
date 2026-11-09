@@ -1,0 +1,228 @@
+{
+  "schema_version": "1.0",
+  "catalog_id": "NEXUS-WORKSPACE-2026-11-09",
+  "scope": "Workspace infrastructure only; no private RAG or business data",
+  "lifecycle_note": "under_review means technically checked and awaiting user acceptance; partial denotes unresolved or unmeasured conditions",
+  "entries": [
+    {
+      "id": "NEXUS-ENV-001",
+      "key": "receipts",
+      "error_ru": "Обновляемая квитанция ошибочно считалась неизменяемым контрактом",
+      "error_en": "A refreshed execution receipt was treated as an immutable contract",
+      "solution_ru": "Проверять источники и EPF по SHA-256; квитанции — по PASS, команде, артефакту и времени. Ошибка квитанции блокирует действие, но штатное обновление допустимо.",
+      "solution_en": "Hash static sources/EPF; validate receipts by PASS, command, artifact and time. Reject invalid receipts while permitting valid refreshes.",
+      "verification": "scripts/workspace_runtime_receipts.py; test_successful_gate_receipt_can_be_refreshed",
+      "rag_status": "under_review"
+    },
+    {
+      "id": "NEXUS-ENV-002",
+      "key": "scheduled-action",
+      "error_ru": "SCHEDULED ошибочно воспринимался как выполненный перезапуск",
+      "error_en": "SCHEDULED was confused with a completed restart",
+      "solution_ru": "Читать result-файл после фонового действия; сохранять структурированный STOP при ошибке. Не приписывать позднее исчезновение PID неуспешному скрипту.",
+      "solution_en": "Read the result after a background action and record structured STOP on errors. Do not attribute a later PID disappearance to a failed worker.",
+      "verification": "scripts/restart_workspace_extension_host.py; EXTENSION_HOST_RESTART_RESULT.json",
+      "rag_status": "under_review"
+    },
+    {
+      "id": "NEXUS-ENV-003",
+      "key": "gateway",
+      "error_ru": "Статический адрес Windows устарел после изменения WSL-сети",
+      "error_en": "A static Windows address became stale after WSL networking changed",
+      "solution_ru": "Разрешать маршрут при запуске MCP, подтверждать адрес адаптером Windows WSL; связывать кэш с gateway и boot ID.",
+      "solution_en": "Resolve the route at MCP startup, confirm the Windows WSL adapter, and bind the cache to gateway plus boot ID.",
+      "verification": "scripts/mcp_host_gateway_launcher.py; MCP initialize/tools-list preflight",
+      "rag_status": "under_review"
+    },
+    {
+      "id": "NEXUS-ENV-004",
+      "key": "gateway-identity",
+      "error_ru": "TCP-connect и default gateway сами по себе не доказывают Windows-хост",
+      "error_en": "TCP reachability and default gateway alone do not prove Windows host identity",
+      "solution_ru": "Не перенаправлять авторизованный endpoint без проверки Windows-адаптера; при неоднозначности блокировать редирект. Проверять HTTP-сервис отдельно.",
+      "solution_en": "Do not redirect authenticated endpoints without Windows-adapter confirmation; reject ambiguous routing and check the HTTP service separately.",
+      "verification": "windows_gateway; WINDOWS_HOST_DISCOVERY.json",
+      "rag_status": "under_review"
+    },
+    {
+      "id": "NEXUS-ENV-005",
+      "key": "target-url",
+      "error_ru": "Общий RSV URL не использовался при цели BASE02",
+      "error_en": "The generic RSV URL was ignored for the BASE02 target",
+      "solution_ru": "Разрешать RSVDATA_MCP_URL_BASE02 до запуска прокси; сохранять путь base02 и запрет перехода на другую базу.",
+      "solution_en": "Resolve RSVDATA_MCP_URL_BASE02 before proxy startup; preserve the base02 path and database guard.",
+      "verification": "pin_rsv_target_url; test_target_specific_url_cannot_reintroduce_stale_gateway",
+      "rag_status": "under_review"
+    },
+    {
+      "id": "NEXUS-ENV-006",
+      "key": "role-path",
+      "error_ru": "Codex CLI 0.139.0 не загрузил относительный путь роли в объединённой конфигурации",
+      "error_en": "Codex CLI 0.139.0 failed to load a relative role path in merged configuration",
+      "solution_ru": "Для этой среды использовать абсолютный существующий config_file, сохраняя модель и sandbox роли; проверять запуск из корня и проекта.",
+      "solution_en": "Use an existing absolute config_file in this environment, preserve role model/sandbox, and test startup in both workspace directories.",
+      "verification": "update_toml; test_role_path_is_compatible_with_installed_cli",
+      "rag_status": "under_review"
+    },
+    {
+      "id": "NEXUS-ENV-007",
+      "key": "codex-schema",
+      "error_ru": "Неподдерживаемые секции и флаги Codex из примера конфигурации",
+      "error_en": "Unsupported Codex sections and flags copied from a prompt example",
+      "solution_ru": "Использовать документированные ключи model, model_reasoning_effort и top-level параметры compaction/tools; проверять реальным установленным CLI.",
+      "solution_en": "Use documented model/reasoning and top-level compaction/tool keys; verify with the installed CLI.",
+      "verification": "codex features list; configuration reference",
+      "rag_status": "under_review"
+    },
+    {
+      "id": "NEXUS-ENV-008",
+      "key": "bsl-schema",
+      "error_ru": "Неизвестные ключи расширения BSL и параметры maxComplexity/skipSupport=true",
+      "error_en": "Unknown BSL extension keys and invalid diagnostic parameter names/types",
+      "solution_ru": "Использовать language-1c-bsl.*, complexityThreshold, maxLineLength и строковое skipSupport; валидировать по полной JSON Schema.",
+      "solution_en": "Use language-1c-bsl.*, complexityThreshold, maxLineLength and string-valued skipSupport; validate against the full JSON Schema.",
+      "verification": ".bsl-language-server.json; BSL configuration schema",
+      "rag_status": "under_review"
+    },
+    {
+      "id": "NEXUS-ENV-009",
+      "key": "mcp-schema",
+      "error_ru": "В VS Code использован mcpServers вместо servers",
+      "error_en": "VS Code MCP configuration used mcpServers instead of servers",
+      "solution_ru": "Учитывать формат конкретного клиента: VS Code servers, Codex mcp_servers. Не переносить конфигурацию другого приложения без проверки.",
+      "solution_en": "Respect client-specific formats: VS Code servers versus Codex mcp_servers. Validate cross-client configuration changes.",
+      "verification": "stabilize_workspace.configuration_checks",
+      "rag_status": "under_review"
+    },
+    {
+      "id": "NEXUS-ENV-010",
+      "key": "heap-rss",
+      "error_ru": "V8 old-space 512 MiB ошибочно считался пределом всего RSS",
+      "error_en": "A 512 MiB V8 old-space limit was treated as a total RSS cap",
+      "solution_ru": "Не гарантировать RSS/GC/CPU из одного heap-флага; различать filesystem MCP и Extension Host, измерять процессы отдельно.",
+      "solution_en": "Do not infer RSS/GC/CPU guarantees from a heap flag; distinguish filesystem MCP from Extension Host and measure each process.",
+      "verification": "STABILIZATION_REPORT; process samples",
+      "rag_status": "partial"
+    },
+    {
+      "id": "NEXUS-ENV-011",
+      "key": "pid-reuse",
+      "error_ru": "Устаревший PID мог указывать на другой процесс",
+      "error_en": "A stale PID could identify a different process",
+      "solution_ru": "Перед SIGTERM сверять boot ID, UID, start ticks, executable и тип Extension Host; не переносить старое разрешение на новый PID.",
+      "solution_en": "Before SIGTERM verify boot ID, UID, start ticks, executable and host type; do not apply an old PID-specific instruction to a replacement.",
+      "verification": "restart_workspace_extension_host.identity; test_python_and_missing_pid_are_not_extension_hosts",
+      "rag_status": "under_review"
+    },
+    {
+      "id": "NEXUS-ENV-012",
+      "key": "git-count",
+      "error_ru": "Строки Git status были приняты за число временных файлов",
+      "error_en": "Grouped Git status entries were mistaken for temporary-file counts",
+      "solution_ru": "Различать status entries и git ls-files -z; классифицировать untracked, сохранять исходники/настройки/документацию и staged-содержимое.",
+      "solution_en": "Distinguish status entries from git ls-files -z counts; classify untracked content and retain sources/configuration/docs and staged content.",
+      "verification": "SOL_OPTIMIZATION_BASELINE; staged fingerprint checks",
+      "rag_status": "under_review"
+    },
+    {
+      "id": "NEXUS-ENV-013",
+      "key": "tracked-diff",
+      "error_ru": "Ожидалось, что local exclude уменьшит tracked diff до целевого лимита",
+      "error_en": "Local excludes were expected to shrink tracked differences",
+      "solution_ru": "Не использовать skip-worktree, удаление или откат рабочей логики ради метрики. Большой tracked diff требует отдельного решения о сохранении изменений.",
+      "solution_en": "Do not use skip-worktree, deletion or source rollback to meet a metric. Large tracked diffs require a separate reviewed preservation decision.",
+      "verification": "FINAL_CONVERGENCE_STATUS.json",
+      "rag_status": "partial"
+    },
+    {
+      "id": "NEXUS-ENV-014",
+      "key": "archive",
+      "error_ru": "Очистка temp могла удалить активные доказательства или уникальные данные",
+      "error_en": "Temporary cleanup could remove active evidence or unique work",
+      "solution_ru": "Строить замыкание ссылок с visited-set, сохранять открытые/новые/source-файлы; проверять SHA-256 всего архива и inode/mtime перед удалением копии.",
+      "solution_en": "Traverse referenced evidence with a visited set, retain open/recent/source files, and verify the full archive plus inode/mtime before removal.",
+      "verification": "sanitize_workspace_temp; finalize_workspace_environment; archive regression tests",
+      "rag_status": "under_review"
+    },
+    {
+      "id": "NEXUS-ENV-015",
+      "key": "duplicate",
+      "error_ru": "Имя копии не доказывает идентичность содержимого",
+      "error_en": "A copy-like filename does not prove duplicate content",
+      "solution_ru": "Удалять копию только при совпадении SHA-256 с существующим оригиналом и после архивации; уникальное содержимое сохранять.",
+      "solution_en": "Remove a copy only after matching an existing original and archiving it; retain unique contents.",
+      "verification": "identical_original; test_unique_copy_is_not_a_disposable_duplicate",
+      "rag_status": "under_review"
+    },
+    {
+      "id": "NEXUS-ENV-016",
+      "key": "context-economics",
+      "error_ru": "Частота сжатий и доля выходных токенов ошибочно считались денежной экономией",
+      "error_en": "Compaction frequency and output-token share were mistaken for monetary savings",
+      "solution_ru": "Учитывать input, cached input и output раздельно; не прибавлять reasoning второй раз; не доказывать оптимум 160k без тарифов и сравнимой телеметрии.",
+      "solution_en": "Account for input, cached input and output separately; do not double-count reasoning or assert a 160k optimum without prices and comparable telemetry.",
+      "verification": "Compaction audit methodology; official model/config references",
+      "rag_status": "under_review"
+    },
+    {
+      "id": "NEXUS-ENV-017",
+      "key": "unmeasured-sla",
+      "error_ru": "Из формулы без измеренных коэффициентов выводились гарантии 350 ms/0.1 s/95%",
+      "error_en": "Unmeasured formulas were used to promise 350 ms/0.1 s/95% bounds",
+      "solution_ru": "Отделять математические допущения от измерений; Git cache warm-up и чтение handover не являются замером полного старта клиента.",
+      "solution_en": "Separate assumptions from measurements; Git cache warm-up and reading a handover do not measure full client startup.",
+      "verification": "FINAL_CONVERGENCE_STATUS; measured Git timings",
+      "rag_status": "partial"
+    },
+    {
+      "id": "NEXUS-ENV-018",
+      "key": "runtime-budget",
+      "error_ru": "Предположение о бюджете 1024 противоречило актуальным 4096 в обоих профилях",
+      "error_en": "An assumed 1024 budget contradicted the existing 4096 values in both profiles",
+      "solution_ru": "Повторно читать настройки до изменения; сохранять пользовательский бюджет, синхронизировать только динамические подсказки ниже границы prefix.",
+      "solution_en": "Re-read configuration before changes, preserve the user's budget and align only dynamic hints below the prefix boundary.",
+      "verification": "FINAL_MODEL_RECHECK; test_dynamic_rules_can_change_but_static_prefix_cannot",
+      "rag_status": "under_review"
+    },
+    {
+      "id": "NEXUS-ENV-019",
+      "key": "pydantic",
+      "error_ru": "Pydantic v1-синтаксис и regex-якоря не соответствовали установленному v2",
+      "error_en": "Pydantic v1 syntax and regex anchors did not match installed v2",
+      "solution_ru": "Использовать pattern= и model_dump(); проверять полные альтернативы regex и совместимые ^/$ вместо неподдерживаемых якорей движка.",
+      "solution_en": "Use pattern= and model_dump(); anchor complete regex alternatives and use supported ^/$ syntax.",
+      "verification": "Pydantic v2 report validation",
+      "rag_status": "under_review"
+    },
+    {
+      "id": "NEXUS-ENV-020",
+      "key": "python-invocation",
+      "error_ru": "Системный Python или прямой запуск test-файла не находил зависимости/scripts",
+      "error_en": "System Python or direct test-file execution could not resolve dependencies/scripts",
+      "solution_ru": "Использовать интерпретатор активного .venv-gemini-bridge; запускать тесты как -m unittest из правильного workspace. Путь Log разрешать от фактического корня silent_runner, а не автоматически от cwd теста.",
+      "solution_en": "Use the active .venv-gemini-bridge interpreter and -m unittest from the correct workspace. Resolve Log against silent_runner's actual root rather than assuming the test cwd.",
+      "verification": "19-test regression suite; interpreter/version metadata",
+      "rag_status": "under_review"
+    },
+    {
+      "id": "NEXUS-ENV-021",
+      "key": "tool-transport",
+      "error_ru": "Transport closed и ошибка alias индекса могли быть приняты за отсутствие файла",
+      "error_en": "Transport closed or a wrong index alias could be mistaken for a missing file",
+      "solution_ru": "Отличать недоступность транспорта от содержимого диска; использовать известные repo aliases и ограниченный read-only fallback, не повторять зависший запрос циклом.",
+      "solution_en": "Distinguish transport failure from file absence; use known repository aliases and a bounded read-only fallback instead of retry loops.",
+      "verification": "Current filesystem MCP incident; native bounded instruction read",
+      "rag_status": "partial"
+    },
+    {
+      "id": "NEXUS-ENV-022",
+      "key": "context-output",
+      "error_ru": "Крупные результаты поиска/JSON засоряли контекст",
+      "error_en": "Large search/JSON outputs inflated context",
+      "solution_ru": "Сохранять полный результат в файл, извлекать только релевантные поля; CLI — через silent_runner с трёхстрочным результатом.",
+      "solution_en": "Save full results locally and extract relevant fields only; wrap CLI commands with silent_runner's three-line protocol.",
+      "verification": "scripts/silent_runner.py; bounded verification summaries",
+      "rag_status": "under_review"
+    }
+  ]
+}

@@ -1,5 +1,21 @@
 # 1c-nexus-infra
 
+## Local workspace checkpoint / Локальный снимок рабочей среды
+
+`workspace-2026.11.09` preserves the verified GPT-6.1 Sol workspace settings,
+infrastructure fixes and regression tests, with a bilingual catalog of 22
+errors/solutions and their RAG record identifiers. It excludes credentials,
+private RAG contents, logs, EPF binaries and business source changes.
+
+Снимок `workspace-2026.11.09` сохраняет настройки GPT-6.1 Sol, исправления
+инфраструктуры и регрессионные тесты; 22 ошибки и решения записаны в RAG.
+Версия снимка отделена от версии Python-пакета 1.0.1. Известные ограничения
+runtime сохраняются явно; snapshot не означает полную стабилизацию среды.
+
+[Русская документация](docs/WORKSPACE_CHECKPOINT_2026-11-09.md) ·
+[English documentation](docs/WORKSPACE_CHECKPOINT_2026-11-09.en.md) ·
+[Snapshot](workspace_profiles/epf1129/2026-11-09/README.md)
+
 > Автономная инфраструктура рабочей среды 1С-разработчика: Graph V2, RAG FSM 2.0, prompt-контракт, Best-of-N BSL-оценка и MCP-мосты. Standalone, portable, без хардкод-путей и секретов.
 
 ## Версия и состояние среды / Version and workspace state
